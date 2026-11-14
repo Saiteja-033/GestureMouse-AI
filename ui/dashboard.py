@@ -5,6 +5,7 @@ safety controls, and live gesture state cards.
 """
 
 import os
+import sys
 import threading
 import time
 import cv2
@@ -74,7 +75,8 @@ class DashboardApp(ctk.CTk):
         self.configure(fg_color=COLOR_BG_DARK)
 
         # Set window icon if available
-        icon_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets", "icons", "app_icon.png"))
+        base_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+        icon_path = os.path.join(base_dir, "assets", "icons", "app_icon.png")
         if os.path.exists(icon_path):
             try:
                 from PIL import ImageTk

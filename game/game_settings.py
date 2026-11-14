@@ -71,6 +71,7 @@ COMBO_BONUS_POINTS = 20
 MAX_SIMULTANEOUS_FRUITS = 4
 
 # Storage Paths
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+import sys
+BASE_DIR = getattr(sys, '_MEIPASS', os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 HIGH_SCORE_FILE = os.path.join(BASE_DIR, "assets", "highscore.json")
 RECORDS_FILE = os.path.join(BASE_DIR, "assets", "game_records.json")

@@ -49,7 +49,7 @@ class ProfileCRUDManager:
 
     def __init__(self, storage_path: Optional[str] = None):
         if storage_path is None:
-            base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+            base_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
             self.storage_path = os.path.join(base_dir, "assets", "game_records.json")
         else:
             self.storage_path = storage_path

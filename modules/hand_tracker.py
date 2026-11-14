@@ -86,7 +86,7 @@ class HandTracker:
 
     def _get_model_path(self) -> str:
         """Finds or downloads the required hand_landmarker model."""
-        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        base_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
         models_dir = os.path.join(base_dir, "models")
         os.makedirs(models_dir, exist_ok=True)
         model_path = os.path.join(models_dir, "hand_landmarker.task")

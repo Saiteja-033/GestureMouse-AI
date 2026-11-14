@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GestureMouse AI - Control Your Computer With Just Your Hands. Touchless Virtual Mouse and Gesture-Controlled Arcade Gaming powered by MediaPipe and OpenCV.">
+  <meta name="keywords" content="AI mouse, gesture recognition, virtual mouse, computer vision, mediapipe, opencv, python, fruit ninja, hand tracking">
+  <title>GestureMouse AI — Control Your Computer With Just Your Hands</title>
+
+  <!-- Open Graph / Meta -->
+  <meta property="og:title" content="GestureMouse AI — Touchless Virtual Mouse & Gaming">
+  <meta property="og:description" content="Transform your standard webcam into an AI-powered touchless virtual mouse and play gesture-controlled Fruit Ninja.">
+  <meta property="og:type" content="website">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../assets/icons/app_icon.png">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ================================================================= -->
+  <!-- NAVIGATION BAR                                                    -->
+  <!-- ================================================================= -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="#" class="nav-logo">
+        <div class="logo-badge">✨</div>
+        <span>GestureMouse <span class="gradient-text">AI</span></span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#fruit-ninja">Fruit Ninja</a></li>
+        <li><a href="#demonstration">Demonstration</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#download">Download</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <a href="#download" class="btn btn-primary download-trigger">Download .EXE</a>
+        <button class="menu-toggle" aria-label="Toggle Navigation Menu">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ================================================================= -->
+  <!-- 1. HERO SECTION                                                   -->
+  <!-- ================================================================= -->
+  <header class="hero" id="home">
+    <div class="container hero-content">
+      <div class="hero-pill">
+        <span>✨ v1.0.0 Now Available with Fruit Ninja Gaming Mode</span>
+      </div>
+
+      <h1 class="hero-title">GestureMouse <span class="gradient-text">AI</span></h1>
+      <h2 class="hero-subtitle">Control Your Computer With Just Your Hands.</h2>
+      <p class="hero-desc">
+        An AI-powered gesture recognition system that transforms your standard webcam into a touchless computer control interface and gesture arcade gaming platform.
+      </p>
+
+      <div class="hero-cta">
+        <a href="#download" class="btn btn-primary download-trigger">
+          <span>🪟</span> Download for Windows
+        </a>
+        <a href="#features" class="btn btn-secondary">
+          <span>⚡</span> Explore Features
+        </a>
+        <a href="https://github.com/Saiteja-033/GestureMouse-AI" target="_blank" class="btn btn-outline github-trigger">
+          <span>🐙</span> View on GitHub
+        </a>
+      </div>
+
+      <!-- Hero Interactive Mockup -->
+      <div class="hero-mockup-wrapper">
+        <div class="hero-mockup">
+          <div class="mockup-window-header">
+            <span class="window-dot dot-red"></span>
+            <span class="window-dot dot-yellow"></span>
+            <span class="window-dot dot-green"></span>
+            <span class="mockup-title">GestureMouse AI - Live Interactive Simulator</span>
+          </div>
+          <div class="mockup-screen">
+            <div class="mockup-overlay-hud">
+              <div class="hud-pill">
+                <span class="hud-dot"></span>
+                <span>NEURAL TRACKING: ACTIVE (60 FPS)</span>
+              </div>
+              <div class="hud-pill">
+                <span>GESTURE: MOVE & SLICE</span>
+              </div>
+            </div>
+
+            <canvas id="heroInteractiveCanvas"></canvas>
+            <div class="canvas-hint">Move your mouse across the screen to test the glowing slicing blade!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================================================================= -->
+  <!-- 2. FEATURES SECTION                                               -->
+  <!-- ================================================================= -->
+  <section class="features-section" id="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Core Capabilities</span>
+        <h2 class="section-title">Engineered for Precision & Fun</h2>
+        <p class="section-desc">
+          State-of-the-art computer vision models mapped into frictionless operating system mouse actions and arcade gaming.
+        </p>
+      </div>
+
+      <div class="features-grid">
+        <!-- Feature 1 -->
+        <div class="glass-card feature-card">
+          <div class="feature-icon-wrapper">🖐️</div>
+          <h3 class="feature-title">AI Hand Tracking</h3>
+          <p class="feature-desc">
+            Powered by MediaPipe 21-point 3D skeletal landmark detection running CPU-accelerated LiteRT inference for instantaneous responsiveness.
+          </p>
+          <div class="feature-badge"><span>✓</span> 21 Landmark Nodes</div>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="glass-card feature-card">
+          <div class="feature-icon-wrapper">🖱️</div>
+          <h3 class="feature-title">Touchless Virtual Mouse</h3>
+          <p class="feature-desc">
+            Smooth cursor navigation using your upright index finger. Exponential Moving Average (EMA) and deadzone filters eliminate tremors and jitter.
+          </p>
+          <div class="feature-badge"><span>✓</span> Sub-Pixel Smoothing</div>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="glass-card feature-card">
+          <div class="feature-icon-wrapper">🤏</div>
+          <h3 class="feature-title">Gesture-Based Clicking</h3>
+          <p class="feature-desc">
+            Thumb + Index pinch for single Left-Click, Thumb + Middle for Right-Click, and Index + Middle touch for instant Double-Click with smart debouncing.
+          </p>
+          <div class="feature-badge"><span>✓</span> Zero Click Storms</div>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="glass-card feature-card">
+          <div class="feature-icon-wrapper">📜</div>
+          <h3 class="feature-title">Smart Scrolling</h3>
+          <p class="feature-desc">
+            Extend both index and middle fingers together to enter scroll mode. Move vertically to scroll web pages, documents, and code effortlessly.
+          </p>
+          <div class="feature-badge"><span>✓</span> Bidirectional Rate-Limited</div>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="glass-card feature-card">
+          <div class="feature-icon-wrapper">⏳</div>
+          <h3 class="feature-title">Drag and Drop</h3>
+          <p class="feature-desc">
+            Hold your pinch for longer than 0.45 seconds to engage full mouse-down dragging. Move files and windows anywhere, then open your fingers to drop.
+          </p>
+          <div class="feature-badge"><span>✓</span> State-Machine Hold</div>
+        </div>
+
+        <!-- Feature 6 -->
+        <div class="glass-card feature-card">
+          <div class="feature-icon-wrapper">🍉</div>
+          <h3 class="feature-title">Fruit Ninja Gesture Gaming</h3>
+          <p class="feature-desc">
+            Switch from mouse control to arcade gaming in one click! Slice flying watermelons, apples, and bananas using your finger blade trail while avoiding bombs.
+          </p>
+          <div class="feature-badge"><span>✓</span> Pygame 60 FPS Engine</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- 3. HOW IT WORKS SECTION                                           -->
+  <!-- ================================================================= -->
+  <section class="workflow-section" id="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">System Architecture</span>
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-desc">
+          Four interconnected stages transform raw optical camera photons into millisecond desktop control.
+        </p>
+      </div>
+
+      <div class="workflow-steps">
+        <!-- Step 1 -->
+        <div class="glass-card step-card">
+          <div class="step-number">1</div>
+          <div class="step-icon">📷</div>
+          <h3 class="step-title">Webcam Capture</h3>
+          <p class="step-desc">
+            OpenCV accesses any standard USB or built-in webcam at 30-60 FPS, applies horizontal mirroring, and normalizes frames.
+          </p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="glass-card step-card">
+          <div class="step-number">2</div>
+          <div class="step-icon">🧠</div>
+          <h3 class="step-title">MediaPipe Tracking</h3>
+          <p class="step-desc">
+            Neural networks identify the hand skeleton and predict 21 spatial landmarks with 3D depth and handedness confidence.
+          </p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="glass-card step-card">
+          <div class="step-number">3</div>
+          <div class="step-icon">⚡</div>
+          <h3 class="step-title">Gesture Engine</h3>
+          <p class="step-desc">
+            Geometric classification calculates joint angles, finger extension, euclidean distances, and velocity for debounced gestures.
+          </p>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="glass-card step-card">
+          <div class="step-number">4</div>
+          <div class="step-icon">🎯</div>
+          <h3 class="step-title">Action Execution</h3>
+          <p class="step-desc">
+            PyAutoGUI moves the OS cursor and executes clicks, while Pygame renders blade trails and slices flying arcade fruits.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- 4. FRUIT NINJA GAME SECTION                                       -->
+  <!-- ================================================================= -->
+  <section class="game-section" id="fruit-ninja">
+    <div class="container">
+      <div class="game-banner">
+        <div class="game-info">
+          <span class="section-tag game-tag">Arcade Gaming Mode</span>
+          <h2 class="game-title">Fruit Ninja: Gesture Gaming Mode</h2>
+          <p class="game-desc">
+            Tired of standard mouse control? Launch the built-in arcade game directly from the dashboard! Your index finger transforms into a glowing razor blade slicing through airborne watermelons, oranges, and apples.
+          </p>
+
+          <ul class="game-features-list">
+            <li><span>🍉</span> Slices 6 different procedural fruit varieties with splitting halves</li>
+            <li><span>💦</span> High-velocity juice particle bursts and persistent wall splatters</li>
+            <li><span>💣</span> Avoid explosive black bombs with screen-shake feedback</li>
+            <li><span>⭐</span> Easy Zen Mode: Gentle floating arcs and forgiving slice physics</li>
+            <li><span>🥋</span> Full CRUD System: Create ninja profiles, customize blade colors & track records</li>
+          </ul>
+
+          <a href="#download" class="btn btn-primary download-trigger">Play Fruit Ninja for Free</a>
+        </div>
+
+        <div class="game-visual-card">
+          <div class="fruit-row">
+            <span>🍉</span>
+            <span>🍊</span>
+            <span>🍎</span>
+            <span>🍌</span>
+            <span>💣</span>
+          </div>
+
+          <div class="game-gestures-grid">
+            <div class="gesture-pill">
+              <b>☝️ Index Finger</b>
+              <span>Virtual Blade Cursor</span>
+            </div>
+            <div class="gesture-pill">
+              <b>⚡ Fast Swipe</b>
+              <span>Cuts Fruits & Combos</span>
+            </div>
+            <div class="gesture-pill">
+              <b>✊ Closed Fist</b>
+              <span>Instant Game Pause</span>
+            </div>
+            <div class="gesture-pill">
+              <b>🖐 Open Palm</b>
+              <span>Resumes Match</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- 5. DEMONSTRATION SECTION                                          -->
+  <!-- ================================================================= -->
+  <section class="demo-section" id="demonstration">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Visual Walkthrough</span>
+        <h2 class="section-title">Application Interface & Gameplay</h2>
+        <p class="section-desc">
+          Designed with dark mode aesthetics, green status indicators, real-time FPS meters, and arcade styling.
+        </p>
+      </div>
+
+      <div class="demo-tabs">
+        <button class="demo-tab-btn active" data-target="demo-dashboard">Desktop Virtual Mouse</button>
+        <button class="demo-tab-btn" data-target="demo-fruitninja">Fruit Ninja Arcade Mode</button>
+        <button class="demo-tab-btn" data-target="demo-crud">Dojo CRUD Profiles</button>
+      </div>
+
+      <div class="demo-viewer">
+        <!-- Panel 1: Dashboard -->
+        <div class="demo-panel" id="demo-dashboard">
+          <div class="demo-card-grid">
+            <div class="demo-preview-visual">
+              <i>🖥️</i>
+              <h3 style="color: #FFFFFF;">GestureMouse AI Desktop Dashboard</h3>
+              <p style="font-size: 0.9rem;">Modern CustomTkinter dark interface featuring real-time video feed, telemetry cards, sensitivity sliders, and emergency stop.</p>
+            </div>
+            <div>
+              <h3 style="font-size: 1.4rem; margin-bottom: 12px; color: var(--accent-cyan);">Dashboard Telemetry Highlights</h3>
+              <ul style="list-style: none; color: var(--text-muted); line-height: 1.9;">
+                <li><b style="color: var(--accent-green);">● Live HUD:</b> 21 glowing skeletal landmarks and active boundary box</li>
+                <li><b style="color: var(--accent-green);">● Precision Tuning:</b> Live sliders for sensitivity, pinch threshold, and cooldown</li>
+                <li><b style="color: var(--accent-green);">● Emergency Safety:</b> Instant ESC keyboard killswitch & PyAutoGUI corner failsafe</li>
+                <li><b style="color: var(--accent-green);">● Asynchronous Threading:</b> 60 FPS video capture without freezing the UI</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 2: Fruit Ninja -->
+        <div class="demo-panel" id="demo-fruitninja" style="display: none;">
+          <div class="demo-card-grid">
+            <div class="demo-preview-visual">
+              <i>🍉</i>
+              <h3 style="color: #FFFFFF;">Arcade Slicing Engine</h3>
+              <p style="font-size: 0.9rem;">Pygame-powered 1280x720 60 FPS rendering with wooden dojo aesthetics, floating scores, and combo multipliers.</p>
+            </div>
+            <div>
+              <h3 style="font-size: 1.4rem; margin-bottom: 12px; color: #FFA726;">Gaming Highlights</h3>
+              <ul style="list-style: none; color: var(--text-muted); line-height: 1.9;">
+                <li><b style="color: #FFA726;">● Multi-Fruit Combos:</b> Slice 2 or more fruits in a single swipe for +20 bonus</li>
+                <li><b style="color: #FFA726;">● Sound Synthesis:</b> Zero external audio dependencies with procedural sound effects</li>
+                <li><b style="color: #FFA726;">● Picture-in-Picture:</b> Real-time mini webcam overlay in top-right HUD</li>
+                <li><b style="color: #FFA726;">● 3 Difficulty Modes:</b> Easy (Zen Mode), Normal (Classic), and Hard (Frenzy)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 3: CRUD Profiles -->
+        <div class="demo-panel" id="demo-crud" style="display: none;">
+          <div class="demo-card-grid">
+            <div class="demo-preview-visual">
+              <i>🥋</i>
+              <h3 style="color: #FFFFFF;">Dojo CRUD Profile Manager</h3>
+              <p style="font-size: 0.9rem;">Manage ninja profiles, customize blade glow colors, and persist high scores directly in JSON.</p>
+            </div>
+            <div>
+              <h3 style="font-size: 1.4rem; margin-bottom: 12px; color: var(--accent-purple-light);">Full CRUD Capabilities</h3>
+              <ul style="list-style: none; color: var(--text-muted); line-height: 1.9;">
+                <li><b style="color: var(--accent-purple-light);">● CREATE:</b> Add new ninja profiles with custom titles and blade styles</li>
+                <li><b style="color: var(--accent-purple-light);">● READ:</b> Inspect leaderboard rankings, total fruits sliced, and matches played</li>
+                <li><b style="color: var(--accent-purple-light);">● UPDATE:</b> Switch active player and cycle blade colors (Cyan, Gold, Emerald, Violet)</li>
+                <li><b style="color: var(--accent-purple-light);">● DELETE:</b> Safely remove old profile records with last-profile protection</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- 6. DOWNLOAD SECTION                                               -->
+  <!-- ================================================================= -->
+  <section class="download-section" id="download">
+    <div class="container">
+      <div class="download-box">
+        <span class="section-tag">Standalone Release</span>
+        <h2 class="section-title">Download GestureMouse AI for Windows</h2>
+        <p class="section-desc">
+          Ready to run right out of the box. No Python installation required.
+        </p>
+
+        <div class="download-meta">
+          <div class="download-meta-item">
+            <span>💻</span> Supported OS: <b>Windows 10 / 11 (64-bit)</b>
+          </div>
+          <div class="download-meta-item">
+            <span>🏷️</span> Version: <b class="release-version-tag">v1.0.0</b>
+          </div>
+          <div class="download-meta-item">
+            <span>📦</span> Package Size: <b class="release-size-tag">~148 MB (Standalone Zip)</b>
+          </div>
+        </div>
+
+        <a href="https://github.com/Saiteja-033/GestureMouse-AI/releases/download/v1.0.0/GestureMouseAI-Windows-x64.zip" class="btn btn-primary download-button-lg download-trigger">
+          <span>⬇️</span> Download Standalone (.ZIP / .EXE)
+        </a>
+
+        <div class="install-steps">
+          <h4>Quick Installation Instructions:</h4>
+          <ol>
+            <li>Download the <b>GestureMouseAI-Windows-x64.zip</b> archive using the button above.</li>
+            <li>Extract the downloaded zip folder to your desired location (e.g. <code>C:\GestureMouseAI</code>).</li>
+            <li>Double-click <b><code>GestureMouseAI.exe</code></b> to launch directly into the dashboard.</li>
+            <li>Click <b>▶ Start Camera</b>, place your hand in view, and enjoy touchless control & Fruit Ninja!</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- 7. ABOUT PROJECT & 8. TECH STACK                                  -->
+  <!-- ================================================================= -->
+  <section class="about-section" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div>
+          <span class="section-tag">Project Background</span>
+          <h2 class="section-title">Accessible Human-Computer Interaction</h2>
+          <p class="section-desc" style="margin-bottom: 16px;">
+            <b>GestureMouse AI</b> was created to explore the future of touchless interaction. By combining cutting-edge computer vision with lightweight edge neural networks, it provides an intuitive, hands-free way to navigate desktops without expensive specialized hardware.
+          </p>
+          <p class="section-desc">
+            Designed for accessibility, hygienic interaction in sterile environments, presentation control, and casual gaming, it proves that any standard webcam can become an interactive optical sensor.
+          </p>
+        </div>
+
+        <div>
+          <span class="section-tag">Technology Stack</span>
+          <h3 style="font-size: 1.4rem; margin-bottom: 14px;">Built with Industry-Leading Open Source Tools</h3>
+          <div class="tech-grid">
+            <div class="tech-badge">
+              <div class="tech-icon">🐍</div>
+              <div class="tech-name">Python 3.11</div>
+              <div class="tech-role">Core Engine</div>
+            </div>
+            <div class="tech-badge">
+              <div class="tech-icon">👁️</div>
+              <div class="tech-name">OpenCV</div>
+              <div class="tech-role">Vision & Video</div>
+            </div>
+            <div class="tech-badge">
+              <div class="tech-icon">🤖</div>
+              <div class="tech-name">MediaPipe</div>
+              <div class="tech-role">Neural Tracking</div>
+            </div>
+            <div class="tech-badge">
+              <div class="tech-icon">🖱️</div>
+              <div class="tech-name">PyAutoGUI</div>
+              <div class="tech-role">OS Control</div>
+            </div>
+            <div class="tech-badge">
+              <div class="tech-icon">🎮</div>
+              <div class="tech-name">Pygame</div>
+              <div class="tech-role">Game Engine</div>
+            </div>
+            <div class="tech-badge">
+              <div class="tech-icon">🔢</div>
+              <div class="tech-name">NumPy</div>
+              <div class="tech-role">Math & Audio</div>
+            </div>
+            <div class="tech-badge">
+              <div class="tech-icon">🎨</div>
+              <div class="tech-name">CustomTkinter</div>
+              <div class="tech-role">Dashboard GUI</div>
+            </div>
+            <div class="tech-badge">
+              <div class="tech-icon">📦</div>
+              <div class="tech-name">PyInstaller</div>
+              <div class="tech-role">Executable Build</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- 9. GITHUB SECTION                                                 -->
+  <!-- ================================================================= -->
+  <section class="github-section">
+    <div class="container">
+      <div class="github-banner">
+        <span class="section-tag">Open Source</span>
+        <h2 class="section-title">Explore the Source Code on GitHub</h2>
+        <p class="section-desc">
+          Contribute, report issues, star the repository, or inspect the modular architecture.
+        </p>
+
+        <div class="code-snippet">
+          <span>git clone https://github.com/Saiteja-033/GestureMouse-AI.git</span>
+        </div>
+
+        <div>
+          <a href="https://github.com/Saiteja-033/GestureMouse-AI" target="_blank" class="btn btn-primary github-trigger">
+            <span>⭐</span> Star Repository on GitHub
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- 10. FOOTER                                                        -->
+  <!-- ================================================================= -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <a href="#" class="nav-logo">
+          <div class="logo-badge">✨</div>
+          <span>GestureMouse <span class="gradient-text">AI</span></span>
+        </a>
+
+        <div class="footer-links">
+          <a href="#features">Features</a>
+          <a href="#how-it-works">How It Works</a>
+          <a href="#fruit-ninja">Fruit Ninja</a>
+          <a href="#download">Download</a>
+          <a href="https://github.com/Saiteja-033/GestureMouse-AI" target="_blank" class="github-trigger">GitHub</a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 GestureMouse AI by Saiteja Allari. Built for accessible human-computer interaction.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Interactive JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
