@@ -21,7 +21,7 @@ class AppSettings:
     # Mouse cursor movement & smoothing
     mouse_control_enabled: bool = True
     cursor_sensitivity: float = 1.3
-    smoothing_factor: float = 0.65  # Higher = smoother, lower = more responsive (0.1 - 0.95)
+    smoothing_factor: float = 0.50  # Balanced responsive & smooth (0.1 - 0.95)
     deadzone_radius: float = 2.0     # Ignore movements under this distance to eliminate hand jitter
     
     # Active interaction boundary (margins from webcam frame edges)
@@ -43,19 +43,19 @@ class AppSettings:
     scroll_sensitivity: float = 1.8           # Multiplier for vertical finger motion to scroll steps
     scroll_deadzone: float = 6.0              # Min vertical delta before scrolling
 
-    # Hand tracking parameters
-    min_detection_confidence: float = 0.70
-    min_tracking_confidence: float = 0.70
+    # Hand tracking parameters (0.50 provides reliable tracking in varying lighting)
+    min_detection_confidence: float = 0.50
+    min_tracking_confidence: float = 0.50
     max_num_hands: int = 1
 
     # Safety
     emergency_stop_key: str = "Escape"
-    pyautogui_failsafe: bool = True
+    pyautogui_failsafe: bool = False
 
     def reset_defaults(self):
         """Reset all adjustable settings back to factory defaults."""
         self.cursor_sensitivity = 1.3
-        self.smoothing_factor = 0.65
+        self.smoothing_factor = 0.50
         self.pinch_threshold = 38.0
         self.click_cooldown = 0.35
         self.mouse_control_enabled = True

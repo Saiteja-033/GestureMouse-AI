@@ -1,18 +1,25 @@
 """
 GestureMouse AI - Mouse Controller Module
-Handles mapping of hand coordinates to screen coordinates, motion smoothing,
+Handles mapping of hand coordinates to screen coordinates, velocity-adaptive smoothing,
 click actions, drag-and-drop, and scrolling with failsafes.
 """
 
+import sys
 import time
 import math
 from typing import Tuple, Optional, Dict, Any
 import pyautogui
 from modules.gesture_recognition import GestureType
 
-# Minimize PyAutoGUI internal delay for high-frequency real-time response
+# Ensure PyAutoGUI doesn't throw FailSafeException on screen edges
 pyautogui.PAUSE = 0.001
-pyautogui.FAILSAFE = True
+pyautogui.FAILSAFE = False
+
+# Native Windows cursor API for zero-latency, high-precision cursor control
+IS_WINDOWS = sys.platform == "win32"
+if IS_WINDOWS:
+    import ctypes
+    user32 = ctypes.windll.user32
 
 
 class MouseController:
@@ -25,7 +32,11 @@ class MouseController:
         self.settings = settings
         
         # Screen dimensions
-        self.screen_w, self.screen_h = pyautogui.size()
+        try:
+            self.screen_w, self.screen_h = pyautogui.size()
+        except Exception:
+            self.screen_w, self.screen_h = 1920, 1080
+
         self.settings.screen_width = self.screen_w
         self.settings.screen_height = self.screen_h
 
@@ -55,7 +66,7 @@ class MouseController:
     ) -> Tuple[float, float]:
         """
         Maps fingertip coordinates within the frame boundary to screen pixel coordinates.
-        Clamps to screen dimensions.
+        Clamps to screen dimensions with safety margins.
         """
         frame_w, frame_h = frame_size
         px, py = point
@@ -87,12 +98,17 @@ class MouseController:
         target_x = norm_x * (self.screen_w - 1)
         target_y = norm_y * (self.screen_h - 1)
 
+        # Clamp inside screen coordinates to prevent boundary lock
+        target_x = max(2.0, min(float(self.screen_w - 3), target_x))
+        target_y = max(2.0, min(float(self.screen_h - 3), target_y))
+
         return target_x, target_y
 
     def smooth_cursor(self, target_x: float, target_y: float) -> Tuple[int, int]:
         """
-        Applies Exponential Moving Average (EMA) and deadzone filtering
-        to eliminate physiological hand jitter and cursor shaking.
+        Velocity-adaptive smoothing:
+        - When moving rapidly: responsive (low latency).
+        - When hovering or moving slowly: heavy smoothing to suppress physiological tremors.
         """
         dist = math.hypot(target_x - self.curr_x, target_y - self.curr_y)
         
@@ -100,12 +116,103 @@ class MouseController:
         if dist < self.settings.deadzone_radius:
             return int(self.curr_x), int(self.curr_y)
 
-        # Smoothing factor: 0.0 = instant, near 1.0 = heavy smoothing
-        alpha = max(0.05, min(0.95, self.settings.smoothing_factor))
+        # Dynamic velocity-adaptive smoothing factor
+        if dist > 60:
+            alpha = 0.22  # Rapid movement: low latency
+        elif dist > 25:
+            alpha = 0.40  # Moderate movement
+        else:
+            alpha = max(0.40, min(0.85, self.settings.smoothing_factor))
+
         self.curr_x = self.curr_x * alpha + target_x * (1.0 - alpha)
         self.curr_y = self.curr_y * alpha + target_y * (1.0 - alpha)
 
         return int(self.curr_x), int(self.curr_y)
+
+    def _move_cursor(self, x: int, y: int):
+        """Moves OS cursor using fast win32 SetCursorPos or PyAutoGUI."""
+        clamped_x = max(2, min(self.screen_w - 3, int(x)))
+        clamped_y = max(2, min(self.screen_h - 3, int(y)))
+        
+        if IS_WINDOWS:
+            try:
+                user32.SetCursorPos(clamped_x, clamped_y)
+                return
+            except Exception:
+                pass
+        
+        try:
+            pyautogui.moveTo(clamped_x, clamped_y)
+        except Exception:
+            pass
+
+    def _left_click(self):
+        """Performs discrete left click."""
+        if IS_WINDOWS:
+            try:
+                user32.mouse_event(0x0002, 0, 0, 0, 0)  # MOUSEEVENTF_LEFTDOWN
+                time.sleep(0.015)
+                user32.mouse_event(0x0004, 0, 0, 0, 0)  # MOUSEEVENTF_LEFTUP
+                return
+            except Exception:
+                pass
+        try:
+            pyautogui.click(button="left")
+        except Exception:
+            pass
+
+    def _right_click(self):
+        """Performs discrete right click."""
+        if IS_WINDOWS:
+            try:
+                user32.mouse_event(0x0008, 0, 0, 0, 0)  # MOUSEEVENTF_RIGHTDOWN
+                time.sleep(0.015)
+                user32.mouse_event(0x0010, 0, 0, 0, 0)  # MOUSEEVENTF_RIGHTUP
+                return
+            except Exception:
+                pass
+        try:
+            pyautogui.click(button="right")
+        except Exception:
+            pass
+
+    def _double_click(self):
+        """Performs double click."""
+        self._left_click()
+        time.sleep(0.05)
+        self._left_click()
+
+    def _mouse_down(self):
+        """Presses and holds left mouse button down."""
+        if not self.is_mouse_down:
+            if IS_WINDOWS:
+                try:
+                    user32.mouse_event(0x0002, 0, 0, 0, 0)
+                    self.is_mouse_down = True
+                    return
+                except Exception:
+                    pass
+            try:
+                pyautogui.mouseDown(button="left")
+            except Exception:
+                pass
+            self.is_mouse_down = True
+
+    def _ensure_mouse_up(self):
+        """Releases the mouse button if held down during drag mode."""
+        if self.is_mouse_down:
+            if IS_WINDOWS:
+                try:
+                    user32.mouse_event(0x0004, 0, 0, 0, 0)
+                    self.is_mouse_down = False
+                    return
+                except Exception:
+                    pass
+            try:
+                pyautogui.mouseUp(button="left")
+            except Exception:
+                pass
+            self.is_mouse_down = False
 
     def execute_action(
         self,
@@ -116,13 +223,23 @@ class MouseController:
         """
         Main execution pipeline for mouse actions corresponding to the recognized gesture.
         """
-        # Master killswitch or paused state
-        if not self.settings.mouse_control_enabled or gesture == GestureType.PAUSE:
+        # 1. Open Palm gesture: re-activates mouse control if paused
+        if gesture == GestureType.ACTIVATE:
+            self.settings.mouse_control_enabled = True
+
+        # 2. Closed Fist gesture: pauses mouse control
+        if gesture == GestureType.PAUSE:
+            self.settings.mouse_control_enabled = False
             self._ensure_mouse_up()
             self.prev_gesture = gesture
             return
 
-        # If tracking lost, safely release drag
+        # 3. If mouse control is disabled or tracking is lost, safely ensure mouse is up
+        if not self.settings.mouse_control_enabled:
+            self._ensure_mouse_up()
+            self.prev_gesture = gesture
+            return
+
         if hand_info is None:
             self._ensure_mouse_up()
             self.prev_gesture = GestureType.NONE
@@ -136,94 +253,83 @@ class MouseController:
         index_tip = lm[8]
 
         try:
-            # 1. Cursor Movement & Dragging
+            # A. Cursor Movement & Dragging
             if gesture in (GestureType.MOVE_MOUSE, GestureType.DRAG_AND_DROP, GestureType.LEFT_CLICK):
                 target_x, target_y = self.map_coordinates(index_tip, frame_size)
                 smooth_x, smooth_y = self.smooth_cursor(target_x, target_y)
-                pyautogui.moveTo(smooth_x, smooth_y)
+                self._move_cursor(smooth_x, smooth_y)
 
-            # 2. Drag & Drop handling
+            # B. Drag & Drop handling
             if gesture == GestureType.DRAG_AND_DROP:
-                if not self.is_mouse_down:
-                    pyautogui.mouseDown(button="left")
-                    self.is_mouse_down = True
+                self._mouse_down()
             else:
                 self._ensure_mouse_up()
 
-            # 3. Left Click (Single discrete click with cooldown & state edge detection)
+            # C. Left Click (Single discrete click with cooldown & state edge detection)
             if gesture == GestureType.LEFT_CLICK:
-                # Trigger click only on transition into LEFT_CLICK or when cooldown elapsed
                 if self.prev_gesture != GestureType.LEFT_CLICK:
                     if (now - self.last_left_click_time) >= self.settings.click_cooldown:
-                        pyautogui.click(button="left")
+                        self._left_click()
                         self.last_left_click_time = now
 
-            # 4. Right Click
+            # D. Right Click
             elif gesture == GestureType.RIGHT_CLICK:
                 if self.prev_gesture != GestureType.RIGHT_CLICK:
                     if (now - self.last_right_click_time) >= self.settings.click_cooldown:
-                        pyautogui.click(button="right")
+                        self._right_click()
                         self.last_right_click_time = now
 
-            # 5. Double Click
+            # E. Double Click
             elif gesture == GestureType.DOUBLE_CLICK:
                 if self.prev_gesture != GestureType.DOUBLE_CLICK:
                     if (now - self.last_double_click_time) >= self.settings.double_click_cooldown:
-                        pyautogui.doubleClick(button="left")
+                        self._double_click()
                         self.last_double_click_time = now
 
-            # 6. Scroll Mode
+            # F. Scroll Mode
             elif gesture == GestureType.SCROLL_MODE:
-                # Average Y of index and middle finger tips
                 mid_y = (lm[8][1] + lm[12][1]) / 2.0
                 if self.prev_scroll_y is not None:
                     delta_y = mid_y - self.prev_scroll_y
                     if abs(delta_y) > self.settings.scroll_deadzone:
                         if (now - self.last_scroll_time) >= self.settings.scroll_cooldown:
-                            # Moving fingers DOWN in camera -> scroll down (negative)
-                            # Moving fingers UP in camera -> scroll up (positive)
                             scroll_amount = int(-delta_y * self.settings.scroll_sensitivity)
                             if scroll_amount != 0:
-                                pyautogui.scroll(scroll_amount)
+                                try:
+                                    pyautogui.scroll(scroll_amount)
+                                except Exception:
+                                    pass
                                 self.last_scroll_time = now
                 self.prev_scroll_y = mid_y
             else:
                 self.prev_scroll_y = None
 
-            # 7. Volume Control (Optional gesture)
+            # G. Volume Control
             if gesture == GestureType.VOLUME_CONTROL:
                 thumb_y = lm[4][1]
                 if self.prev_thumb_y is not None:
                     delta_thumb_y = thumb_y - self.prev_thumb_y
                     if (now - self.last_volume_time) >= 0.18:
-                        if delta_thumb_y < -12:  # Moving thumb up
-                            pyautogui.press("volumeup")
+                        if delta_thumb_y < -12:
+                            try:
+                                pyautogui.press("volumeup")
+                            except Exception:
+                                pass
                             self.last_volume_time = now
-                        elif delta_thumb_y > 12:  # Moving thumb down
-                            pyautogui.press("volumedown")
+                        elif delta_thumb_y > 12:
+                            try:
+                                pyautogui.press("volumedown")
+                            except Exception:
+                                pass
                             self.last_volume_time = now
                 self.prev_thumb_y = thumb_y
             else:
                 self.prev_thumb_y = None
 
-        except pyautogui.FailSafeException:
-            # Emergency failsafe triggered by hitting the corner of screen
-            self.settings.mouse_control_enabled = False
-            self._ensure_mouse_up()
         except Exception:
-            # Defensively catch any system OS mouse failure without crashing the app
             pass
 
         self.prev_gesture = gesture
-
-    def _ensure_mouse_up(self):
-        """Releases the mouse button if held down during drag mode."""
-        if self.is_mouse_down:
-            try:
-                pyautogui.mouseUp(button="left")
-            except Exception:
-                pass
-            self.is_mouse_down = False
 
     def emergency_stop(self):
         """Immediately abort all mouse operations and disable mouse control."""

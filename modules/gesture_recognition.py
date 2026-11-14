@@ -53,30 +53,35 @@ class GestureRecognizer:
     def detect_fingers_up(self, lm: List[Tuple[int, int]], handedness: str = "Right") -> List[bool]:
         """
         Determines which of the 5 fingers are extended [thumb, index, middle, ring, pinky].
-        Uses both vertical coordinate comparisons and joint vector angles for reliability.
+        Combines vertical coordinate comparisons and radial distance from wrist for robust detection
+        in any hand orientation (upright, tilted, forward).
         """
         fingers = []
+        wrist = lm[0]
 
-        # Thumb: compare tip (4) to IP (3) and MCP (2)
-        # In a mirror view or based on handedness, check horizontal extension or distance to pinky MCP (17)
+        # Thumb: compare tip (4) to IP (3) and distance from pinky MCP (17)
         dist_thumb_pinky = self.euclidean_dist(lm[4], lm[17])
         dist_ip_pinky = self.euclidean_dist(lm[3], lm[17])
-        # When thumb is extended outward, tip is farther from pinky MCP than IP joint
-        is_thumb_up = dist_thumb_pinky > (dist_ip_pinky * 1.15)
+        dist_thumb_wrist = self.euclidean_dist(lm[4], wrist)
+        dist_ip_wrist = self.euclidean_dist(lm[3], wrist)
+        # Extended outward or extended away from wrist
+        is_thumb_up = (dist_thumb_pinky > dist_ip_pinky * 1.15) or (dist_thumb_wrist > dist_ip_wrist * 1.15)
         fingers.append(is_thumb_up)
 
-        # 4 Fingers: Tip must be higher (lower y) than PIP joint and MCP joint
-        # Index: 8 (tip), 6 (pip), 5 (mcp)
-        # Middle: 12 (tip), 10 (pip), 9 (mcp)
-        # Ring: 16 (tip), 14 (pip), 13 (mcp)
-        # Pinky: 20 (tip), 18 (pip), 17 (mcp)
+        # 4 Fingers: Index (8), Middle (12), Ring (16), Pinky (20)
         tip_ids = [8, 12, 16, 20]
         pip_ids = [6, 10, 14, 18]
         mcp_ids = [5, 9, 13, 17]
 
         for tip, pip, mcp in zip(tip_ids, pip_ids, mcp_ids):
-            # Tip is above PIP and above MCP (lower Y coordinate means higher on screen)
-            is_extended = (lm[tip][1] < lm[pip][1]) and (lm[tip][1] < lm[mcp][1])
+            # 1. Vertical orientation check
+            vert_extended = (lm[tip][1] < lm[pip][1]) and (lm[tip][1] < lm[mcp][1])
+            # 2. Radial distance from wrist (invariant to hand rotation / pointing at screen)
+            dist_tip_wrist = self.euclidean_dist(lm[tip], wrist)
+            dist_pip_wrist = self.euclidean_dist(lm[pip], wrist)
+            radial_extended = dist_tip_wrist > (dist_pip_wrist * 1.12)
+            
+            is_extended = vert_extended or radial_extended
             fingers.append(is_extended)
 
         return fingers

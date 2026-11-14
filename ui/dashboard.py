@@ -355,18 +355,26 @@ class DashboardApp(ctk.CTk):
         self.mouse_controller.emergency_stop()
         if was_camera_running:
             self.stop_camera()
+            if self.camera_thread and self.camera_thread.is_alive():
+                try:
+                    self.camera_thread.join(timeout=0.8)
+                except Exception:
+                    pass
 
         self.game_btn.configure(state="disabled", text="🎮 Running Fruit Ninja...")
         self.withdraw()
 
         def run_game_worker():
             try:
+                time.sleep(0.2)
                 from game.fruit_ninja import launch_fruit_ninja
                 launch_fruit_ninja(camera_index=self.settings.camera_index)
             except Exception as e:
+                import traceback
                 print(f"[FruitNinja Launch Error]: {e}")
+                traceback.print_exc()
             finally:
-                self.after(100, lambda: self._on_game_closed(was_camera_running, was_mouse_enabled))
+                self.after(200, lambda: self._on_game_closed(was_camera_running, was_mouse_enabled))
 
         threading.Thread(target=run_game_worker, daemon=True).start()
 
@@ -374,10 +382,10 @@ class DashboardApp(ctk.CTk):
         """Restores dashboard state when user exits Fruit Ninja."""
         self.deiconify()
         self.game_btn.configure(state="normal", text="🎮 PLAY FRUIT NINJA")
-        if was_camera_running:
-            self.start_camera()
         if was_mouse_enabled and bool(self.mouse_switch.get()):
             self.settings.mouse_control_enabled = True
+        if was_camera_running:
+            self.after(350, self.start_camera)
 
     def _build_tuning_sliders(self, parent):
         """Slider panel for calibration and customization."""
@@ -760,6 +768,17 @@ class DashboardApp(ctk.CTk):
             # FPS Card
             fps_str = f"{self.fps:.1f} FPS"
             self.card_fps.set_value(fps_str, COLOR_ACCENT_GREEN)
+
+        # Synchronize mouse switch status with runtime settings
+        if hasattr(self, "mouse_switch") and self.mouse_switch.winfo_exists():
+            if self.settings.mouse_control_enabled:
+                if self.mouse_switch.cget("text") != "ACTIVE":
+                    self.mouse_switch.select()
+                    self.mouse_switch.configure(text="ACTIVE", text_color=COLOR_ACCENT_GREEN)
+            else:
+                if self.mouse_switch.cget("text") != "MUTED":
+                    self.mouse_switch.deselect()
+                    self.mouse_switch.configure(text="MUTED", text_color=COLOR_ACCENT_RED)
 
         if not self.is_closing:
             self.after_id = self.after(30, self._update_gui_loop)
