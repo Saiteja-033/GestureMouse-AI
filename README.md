@@ -127,13 +127,56 @@ python game/fruit_ninja.py
 
 ## 🧪 Running Automated Tests
 
-Run the full test suite covering coordinate mapping, gesture classification, debouncing, UI lifecycle, and Fruit Ninja game physics:
+Run the full test suite covering coordinate mapping, gesture classification, debouncing, UI lifecycle, Fruit Ninja arcade game physics, and Profile CRUD operations:
 
 ```bash
 python -m unittest discover -s tests -p "test_*.py" -v
 ```
 
-All 25 test cases will pass with `OK`.
+All 31 test cases pass with `OK`.
+
+---
+
+## 📦 Standalone Windows Distribution (.exe)
+
+A pre-packaged standalone Windows desktop build is available with no Python installation required!
+
+### 📥 Direct Download
+- **Release Version**: `v1.0.0`
+- **Download Package**: [GestureMouseAI-Windows-x64.zip](https://github.com/Saiteja-033/GestureMouse-AI/releases/download/v1.0.0/GestureMouseAI-Windows-x64.zip) (~148 MB)
+- **Supported OS**: Windows 10 / 11 (64-bit)
+
+### 🚀 Running the Executable
+1. Download and extract `GestureMouseAI-Windows-x64.zip`.
+2. Double-click `GestureMouseAI.exe`.
+3. The modern dark dashboard launches immediately with webcam access and Fruit Ninja arcade mode.
+
+### 🔨 Rebuilding the Executable Locally
+To compile the standalone distribution from source using PyInstaller:
+```bash
+python build_exe.py
+```
+The output executable is packaged at `dist/GestureMouseAI/GestureMouseAI.exe`.
+
+---
+
+## 🌐 Showcase Website & Vercel Deployment
+
+A futuristic dark-neon showcase website is included in the `website/` directory.
+
+### Local Preview
+```bash
+python -m http.server 8000 --directory website
+```
+Open `http://localhost:8000` to view the website with interactive blade-slashing canvas simulation.
+
+### Deploying to Vercel
+1. Install Vercel CLI (optional) or push to GitHub.
+2. In the Vercel Dashboard, import the repository:
+   - **Repository**: `https://github.com/Saiteja-033/GestureMouse-AI`
+   - **Root Directory**: `website`
+   - **Framework Preset**: `Other`
+3. Click **Deploy**. Vercel will host the website with zero-config clean URLs via `website/vercel.json`.
 
 ---
 
@@ -143,6 +186,7 @@ All 25 test cases will pass with `OK`.
 GestureMouseAI/
 │
 ├── main.py                     # Application entrypoint & CLI argument parser
+├── build_exe.py                # PyInstaller standalone build script
 ├── requirements.txt            # Locked and verified dependencies
 ├── README.md                   # Comprehensive documentation
 │
@@ -158,16 +202,37 @@ GestureMouseAI/
 │   ├── dashboard.py            # CustomTkinter dashboard window & webcam worker thread
 │   └── components.py           # Reusable telemetry cards, sliders, and badges
 │
+├── game/
+│   ├── fruit_ninja.py          # Pygame arcade engine & MediaPipe game loop
+│   ├── fruit_objects.py        # Flying fruit physics, curved trajectories & splitting halves
+│   ├── particle_effects.py     # Juice splatter bursts & blade trails
+│   ├── sound_generator.py      # Procedural sound synthesis (swoosh, splat, explode)
+│   ├── game_settings.py        # Difficulty presets (Easy Zen, Normal, Hard)
+│   └── profile_manager.py      # Full CRUD profile & high score JSON persistence
+│
+├── website/
+│   ├── index.html              # Futuristic AI showcase website (10 sections)
+│   ├── styles.css              # Glassmorphism, purple/neon gradients, responsive
+│   ├── script.js               # Blade simulation, tabs, mobile nav, release links
+│   └── vercel.json             # Vercel deployment & security headers configuration
+│
 ├── models/
 │   └── hand_landmarker.task    # MediaPipe hand landmark detection model (LiteRT/XNNPACK)
 │
 ├── assets/
+│   ├── game_records.json       # Dojo player CRUD profile database
 │   └── icons/
-│       └── app_icon.png        # Application desktop window icon
+│       ├── app_icon.png        # Application desktop window icon
+│       └── app_icon.ico        # Windows executable application icon
+│
+├── .github/workflows/
+│   └── deploy.yml              # CI/CD: Automated PyInstaller test, build & release
 │
 └── tests/
     ├── test_gestures.py        # Unit tests for gesture logic & coordinates
-    └── test_ui_app.py          # Integration tests for CustomTkinter GUI lifecycle
+    ├── test_ui_app.py          # Integration tests for CustomTkinter GUI lifecycle
+    ├── test_fruit_ninja.py     # Unit tests for game physics, fruit slicing & combos
+    └── test_profile_crud.py    # Unit tests for Profile CRUD database operations
 ```
 
 ---
